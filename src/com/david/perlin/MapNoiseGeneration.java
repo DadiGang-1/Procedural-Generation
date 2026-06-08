@@ -7,22 +7,114 @@ public class MapNoiseGeneration {
 	
 	private static final char[] STEP =  {' ', '░', '▒', '▓', '█'};
 	
-	private static final int WIDTH = 20;
-	private static final int LENGTH = 20;
-	private static final int FREQUENCY = 2;
+	private static final int WIDTH = 16;
+	private static final int LENGTH = 16;
+	private static final int FREQUENCY = 1;
 	
 	private static final int SEGMENT_LENGTH = WIDTH/FREQUENCY;
 	private static final int SEGMENT_NUMBER = WIDTH/SEGMENT_LENGTH;
 	
-	
+	private static final int RENDER_VISION = 1; // Cercle autour du point 
+	private static final long SEED = 123456789;
 	
 	
 	public static void main(String[] args) {
 
 		float[][] randomPoint = new float[SEGMENT_NUMBER+1][SEGMENT_NUMBER+1];		
 		float[][] mapNoise = new float[WIDTH][LENGTH];
-				
+						
+		float[][] chunckLoaded = new float[WIDTH][LENGTH];
+		float[][] chunckVoid = new float[WIDTH][LENGTH];
+		
+		float[][] finalMap = new float[WIDTH*(RENDER_VISION*2+1)][LENGTH*(RENDER_VISION*2+1)];
+		
+		generateVoid(chunckVoid);
+		
 		Random random = new Random();
+		
+		int spawnX = random.nextInt(10) - 5;
+		int spawnY = random.nextInt(10) - 5;
+		
+		 
+		// CHUNCK LOADER
+		
+		
+		for(int x = spawnX - RENDER_VISION; x <= spawnX + RENDER_VISION; x++) {
+			for(int y = spawnY + RENDER_VISION; y >= spawnY - RENDER_VISION; y--) {
+
+				if(isInCircle(spawnX, spawnY, x, y, RENDER_VISION)) {
+					
+					
+					//System.out.print("O");		
+					generateMap(chunckLoaded, x, y);
+					printHeightMap(WIDTH, LENGTH, chunckLoaded);
+					
+					
+					
+				} else {
+					// print chunck vide
+					
+					printHeightMap(WIDTH, LENGTH, chunckVoid);
+					//System.out.print("X");	
+					/*
+					for(float[] m: mapNoise) {
+						for(float value : m) {
+							value = 0;
+						}
+					}
+					printHeightMap(WIDTH, LENGTH, mapNoise);
+					*/
+					//generateVoid(mapNoise, x, y);
+					
+					
+					
+				}
+
+			}
+			System.out.println();
+		}
+		System.out.println();
+		
+		
+		
+		for(int snX = spawnX; snX < SEGMENT_NUMBER; snX++) {			
+			for(int snY = spawnY; snY < SEGMENT_NUMBER; snY++) {	
+				
+				for(int x = 0; x < SEGMENT_LENGTH; x++) {
+					for(int y = 0; y < SEGMENT_LENGTH; y++) {
+						
+						float tx = x / ((SEGMENT_LENGTH-1)*1.0f);
+						float ty = y / ((SEGMENT_LENGTH-1)*1.0f);
+						
+						float a = getControlPoint(SEED, spawnX, spawnY+1);
+						float b = getControlPoint(SEED, spawnX+1, spawnY+1);
+						float c = getControlPoint(SEED, spawnX, spawnY);
+						float d = getControlPoint(SEED, spawnX+1, spawnY);
+						
+						float top = lerp(a, b, tx);
+						float bot = lerp(c, d, tx);
+						
+						float value = lerp(top, bot, ty);
+						
+						mapNoise[x + (snX*SEGMENT_LENGTH)][y + (snY*SEGMENT_LENGTH)] = value;
+					}
+				}
+			}
+		}
+		
+		printHeightMap(WIDTH, LENGTH, mapNoise);
+		
+		
+		
+		
+		
+		//printHeightMap(WIDTH, LENGTH, mapNoise);
+		
+		
+		
+		
+		
+		
 		
 		for(int x = 0; x < SEGMENT_NUMBER+1; x++) {
 			for(int y = 0; y < SEGMENT_NUMBER+1; y++) {
@@ -59,7 +151,7 @@ public class MapNoiseGeneration {
 		printMap(SEGMENT_NUMBER+1, SEGMENT_NUMBER+1, randomPoint);
 		System.out.println("\n");
 		printHeightMap(WIDTH, LENGTH, mapNoise);
-		
+		/*
 		
 		float[] lastRandomPoint = new float[SEGMENT_NUMBER+1];
 		for(int i = 0; i < SEGMENT_NUMBER; i++) {
@@ -120,7 +212,7 @@ public class MapNoiseGeneration {
 			
 		}
 		
-		
+		*/
 		
 		
 		
@@ -138,7 +230,9 @@ public class MapNoiseGeneration {
 	public static void printHeightMap(int gridSizeX, int gridSizeY, float[][] map) {
 		for(int i=0; i<gridSizeX;i++) {
 			for(int j=0; j<gridSizeY;j++) {
-				if(map[i][j] <= 0.20f) {					
+				if (map[i][j] == 0) {
+					System.out.print(".");
+				} else if(map[i][j] <= 0.20f) {					
 					System.out.print(STEP[0]);
 				} else if(map[i][j] <= 0.40f) {
 					System.out.print(STEP[1]);
@@ -181,6 +275,56 @@ public class MapNoiseGeneration {
 	
 	public static float lerp(float a, float b, float t) {
 		return a + (b - a) * t;
+	}
+	
+	public static float getControlPoint(long worldSeed, int pointX, int pointY) {
+		long num1 = 341873128712L;
+		long num2 = 132897987541L;
+		long localSeed = worldSeed + pointX * num1 + pointY * num2;
+		
+		Random random = new Random(localSeed);
+		return random.nextFloat();
+	}
+	
+	public static boolean isInCircle(double centerX, double centerY, int x, int y, double rayon) {
+		double distance = Math.sqrt(Math.pow(x - centerX,2) + Math.pow(y - centerY,2));
+		return distance <= rayon;
+	}
+
+	public static void generateMap(float[][] mapNoise, int spawnX, int spawnY) {
+		//for(int snX = spawnX; snX < SEGMENT_NUMBER; snX++) {			
+		//	for(int snY = spawnY; snY < SEGMENT_NUMBER; snY++) {	
+				
+				for(int x = 0; x < SEGMENT_LENGTH; x++) {
+					for(int y = 0; y < SEGMENT_LENGTH; y++) {
+						
+						float tx = x / ((SEGMENT_LENGTH-1)*1.0f);
+						float ty = y / ((SEGMENT_LENGTH-1)*1.0f);
+						
+						float a = getControlPoint(SEED, spawnX, spawnY+1);
+						float b = getControlPoint(SEED, spawnX+1, spawnY+1);
+						float c = getControlPoint(SEED, spawnX, spawnY);
+						float d = getControlPoint(SEED, spawnX+1, spawnY);
+						
+						float top = lerp(a, b, tx);
+						float bot = lerp(c, d, tx);
+						
+						float value = lerp(top, bot, ty);
+						
+						mapNoise[x][y] = value;
+						//mapNoise[x + (snX*SEGMENT_LENGTH)][y + (snY*SEGMENT_LENGTH)] = value;
+					}
+				}
+		//	}
+		//}
+	}
+	
+	public static void generateVoid(float[][] voidChunck) {
+		for(int x = 0; x < WIDTH; x++) {
+			for(int y = 0; y < LENGTH; y++) {
+				voidChunck[x][y] = 0;
+			}
+		}
 	}
 
 }
