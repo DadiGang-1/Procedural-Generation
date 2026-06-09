@@ -41,20 +41,48 @@ public class MapNoiseGeneration {
 		
 		for(int x = spawnX - RENDER_VISION; x <= spawnX + RENDER_VISION; x++) {
 			for(int y = spawnY + RENDER_VISION; y >= spawnY - RENDER_VISION; y--) {
-
+				
 				if(isInCircle(spawnX, spawnY, x, y, RENDER_VISION)) {
 					
+					for(int finalX = 0 + (Math.abs(x*SEGMENT_LENGTH)); finalX < SEGMENT_LENGTH + (Math.abs(x*SEGMENT_LENGTH)); finalX++) {
+						for(int finalY = 0 + (Math.abs(y*SEGMENT_LENGTH)); finalY < SEGMENT_LENGTH + (Math.abs(y*SEGMENT_LENGTH)); finalY++) {
+							/*
+							float tx = x / ((SEGMENT_LENGTH-1)*1.0f);
+							float ty = y / ((SEGMENT_LENGTH-1)*1.0f);
+							
+							float a = getControlPoint(SEED, x, y+1);
+							float b = getControlPoint(SEED, x+1, y+1);
+							float c = getControlPoint(SEED, x, y);
+							float d = getControlPoint(SEED, x+1, y);
+							
+							float top = lerp(a, b, tx);
+							float bot = lerp(c, d, tx);
+							
+							float value = lerp(top, bot, ty);
+							
+							finalMap[finalX][finalY] = value;
+									//mapNoise[x + (snX*SEGMENT_LENGTH)][y + (snY*SEGMENT_LENGTH)] = value;
+							*/
+							finalMap[finalX][finalY] = 1;
+						}
+					}
 					
 					//System.out.print("O");		
-					generateMap(chunckLoaded, x, y);
-					printHeightMap(WIDTH, LENGTH, chunckLoaded);
+					//generateMap(chunckLoaded, x, y);
+					//printHeightMap(WIDTH, LENGTH, chunckLoaded);
 					
 					
 					
 				} else {
 					// print chunck vide
+					for(int finalX = 0 + (Math.abs(x*SEGMENT_LENGTH)); finalX < SEGMENT_LENGTH + (Math.abs(x*SEGMENT_LENGTH)); finalX++) {
+						for(int finalY = 0 + (Math.abs(y*SEGMENT_LENGTH)); finalY < SEGMENT_LENGTH + (Math.abs(y*SEGMENT_LENGTH)); finalY++) {
+							finalMap[finalX][finalY] = 0;
+						}
+					}
 					
-					printHeightMap(WIDTH, LENGTH, chunckVoid);
+					
+					//printHeightMap(WIDTH, LENGTH, chunckVoid);
 					//System.out.print("X");	
 					/*
 					for(float[] m: mapNoise) {
@@ -74,6 +102,10 @@ public class MapNoiseGeneration {
 			System.out.println();
 		}
 		System.out.println();
+		
+		printHeightMap(WIDTH*(RENDER_VISION*2+1), LENGTH*(RENDER_VISION*2+1), finalMap);
+		
+		
 		
 		
 		
