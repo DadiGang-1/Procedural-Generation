@@ -9,6 +9,7 @@ public class LoadedMap {
 	private int fullWidth;
 	private int fullLength;
 	private int coordX;
+
 	private int coordY;
 	private float[][] loadedMap;
 	
@@ -19,7 +20,23 @@ public class LoadedMap {
 	public void setLoadedMap(float[][] loadedMap) {
 		this.loadedMap = loadedMap;
 	}
+	
+	public int getCoordX() {
+		return coordX;
+	}
 
+	public void setCoordX(int coordX) {
+		this.coordX = coordX;
+	}
+
+	public int getCoordY() {
+		return coordY;
+	}
+
+	public void setCoordY(int coordY) {
+		this.coordY = coordY;
+	}
+	
 	public LoadedMap(int coordX, int coordY, Chunk chunk) {
 		this.coordX = coordX;
 		this.coordY = coordY;
