@@ -8,7 +8,7 @@ public class Main {
 		Seed seed = new Seed();
 		Chunk chunk = new Chunk();
 		
-		
+		/*
 		chunk.printChunk(chunk.generateChunk(0,1));
 		chunk.printChunk(chunk.generateChunk(0,0));
 		chunk.printChunk(chunk.generateChunk(0,-1));
@@ -16,7 +16,11 @@ public class Main {
 		chunk.printChunk(chunk.generateChunk(1,1));
 		chunk.printChunk(chunk.generateChunk(1,0));
 		chunk.printChunk(chunk.generateChunk(1,-1));
+		*/
+		LoadedMap loadedMap = new LoadedMap(0, 0, new Chunk());
 		
+		loadedMap.generateMap();
+		loadedMap.printMap(loadedMap.getLoadedMap());
 	}
 
 }

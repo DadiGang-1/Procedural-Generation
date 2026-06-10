@@ -16,6 +16,34 @@ public class Chunk {
 		
 	}
 	
+	public float[][] getChunk() {
+		return chunk;
+	}
+
+	public void setChunk(float[][] chunk) {
+		this.chunk = chunk;
+	}
+
+	public int getWidth() {
+		return WIDTH;
+	}
+
+	public int getLength() {
+		return LENGTH;
+	}
+
+	public static int getFrequency() {
+		return FREQUENCY;
+	}
+
+	public int getSegmentLength() {
+		return SEGMENT_LENGTH;
+	}
+
+	public static int getSegmentNumber() {
+		return SEGMENT_NUMBER;
+	}
+
 	public float[][] generateChunk(int chunkY, int chunkX) {
 		Seed seed = new Seed();		
 		
